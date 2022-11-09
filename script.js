@@ -16,7 +16,25 @@ const goldText = document.querySelector("#goldText");
 const monsterStats = document.querySelector("#monsterStats");
 const monsterNameText = document.querySelector("#monsterName");
 const monsterHealthText = document.querySelector("#monsterHealth");
-const location = [
+const weapons = [
+    {
+        name:"stick",
+        power:5
+    },
+    {
+        name:"dagger",
+        power:30
+    },
+    {
+        name:"claw hammer",
+        power:50
+    },
+    {
+        name:"sword",
+        power:100
+    },
+];
+const locations  = [
     {
         name: "town square",
         "button text" : ["Go to store", "Go to cave", "Fight Dragon"],
@@ -26,8 +44,14 @@ const location = [
     {
         name: "store",
         "button text" : ["Buy 10 health(10 gold)","Buy weapon (30 gold)","Go to town square"],
-        "button functionalities" :[buyHealth,buyWeapon,goTown],
-        text: "You enter the store"
+        "button functions" :[buyHealth,buyWeapon,goTown],
+        text: "You enter the store."
+    },
+    {
+        name: "cave",
+        "button text" : ["Fight slime","Fight fanged beast","Go to town square"],
+        "button functions" :[fightSlime,fightBeast,goTown],
+        text: "You enter the cave, You see some monsters."
     }
 
 ];
@@ -37,53 +61,73 @@ button1.onclick = goStore;
 button2.onclick = goCave;
 button3.onclick = fightDragon;
 
-function update(loaction){
-
-}
-
-function goStore() {
-
+function update(location){
     //Changes the inner texts of button
-    button1.innerText = "Buy 10 health(10 gold)";
-    button2.innerText = "Buy weapon (30 gold)";
-    button3.innerText = "Go to town square";
+    button1.innerText = location["button text"][0];
+    button2.innerText = location["button text"][1];
+    button3.innerText = location["button text"][2];
 
     //Changes the text of text section
-    text.innerText = "You enter the store"; 
-    
+    text.innerText = location["text"]; 
+
     //Changes the onClick property of button
-    button1.onclick = buyHealth;
-    button2.onclick = buyWeapon; 
-    button3.onclick = goTown;
-    
-} 
-function goTown(){
-//Changes the inner texts of button
-button1.innerText = "Go to store";
-button2.innerText = "Go to cave";
-button3.innerText = "Fight dragon";
-
-//Changes the text of text section
-text.innerText = "You enter the store"; 
-
-//Changes the onClick property of button
-button1.onclick = goStore;
-button2.onclick = goCave; 
-button3.onclick = fightDragon;
+    button1.onclick = location["button functions"][0];
+    button2.onclick = location["button functions"][1]; 
+    button3.onclick = location["button functions"][2];
 }
 
+function goTown(){
+    update(locations[0]);
+}
+function goStore() {
+    update(locations[1]);
+} 
+function goCave() {
+    update(locations[2]);
+}
 function buyWeapon(){
+if(currentWeapon < weapons.length-1)
+{
+    if(gold >= 30){
+        gold -= 30;
+        currentWeapon++;
+        goldText.innerText = gold;
+        let newWeapon = weapons[currentWeapon].name;
+        text.innerText = "You now have a"+ newWeapon + ".";
+        inventory.push(newWeapon);
+        text.innerText = "In your inventory you have: "+ inventory;
+    }else{
+        text.innerText = "You do not have enough gold to buy a weapon"
+    }
+}else{
+        text.innerText = "You already have the most powerful weapon!";
+        button2.innerText = "Sell Weapon for 15 gold"
+        button2.onclick = sellWeapon;
+    }    
+}
+function sellWeapon(){
 
 }
 
 function buyHealth(){
-
+  if(gold >= 10)
+  {
+    gold -= 10
+    health += 10
+    goldText.innerText = gold;
+    healthText.innerText = health;
+  }else{
+    text.innerText = "You do not have enough gold to buy health"; 
+}
 }
 
-function goCave() {
-    console.log("Going to Cave")
-}
 
 function fightDragon() {
-    console.log("Going to fight a dragon")
+    
+}
+function fightSlime(){
+
 } 
+function fightBeast(){
+
+}
