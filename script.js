@@ -79,7 +79,7 @@ const locations  = [
     {
         name: "kill monster",
         "button text" : ["Go to town square","Go to town square","Go to town square"],
-        "button functions" :[goTown,goTown,goTown],
+        "button functions" :[goTown,goTown,easterEgg],
         text: 'The monster screams "Arg!" as it dies. You gain experience points and finds gold.'
     },
     {
@@ -89,13 +89,17 @@ const locations  = [
         text: "You Die. 💀"
     },
     {
-        name: "lose",
+        name: "win",
         "button text" : ["Replay?","Replay?","Replay?"],
         "button functions" :[restart,restart,restart],
         text: "You defeat a dragon! YOU WIN THE GAME! 🎊🎊"
     },
-    
-
+    {
+        name: "easter egg",
+        "button text" : ["2","8","Go to town square?"],
+        "button functions" :[pickTwo,pickEight,goTown],
+        text: "You found a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
+    }
 ];
 
 // initialize buttons
@@ -219,7 +223,14 @@ function goFight(){
 function attack(){
    text.innerText = "The " + monsters[fighting].name + " attacks,";
    text.innerText += " You attack with your " +  weapons[currentWeapon].name + "."; 
-   health -= monsters[fighting].level;
+   
+   if(isMonsterHit())
+   {
+    health -= getMonsterAttackValue(monsters[fighting].level);
+   }else{
+        text.innerText += "You missed the attack, Be Cautious";
+   }
+  
    monsterHealth -= weapons[currentWeapon].power + Math.floor(Math.random() * xp)+1;
    healthText.innerText = health;
    monsterHealthText.innerText = monsterHealth;
@@ -228,6 +239,21 @@ function attack(){
    }else if(monsterHealth <= 0){
      fighting == 2 ? winGame() : defeatMonster()
    }
+
+   if(Math.random() <= .1 && inventory.length !==  1){
+    text.innerText += "Your "+ inventory.pop() + "breaks.";
+    currentWeapon--;
+   }
+}
+
+function getMonsterAttackValue(level){
+ let hit = (level * 5) - Math.floor(Math.random() * xp);
+ console.log(hit);
+ return hit;
+}
+
+function isMonsterHit(){
+    return Math.random() > .2 || health< 20;
 }
 
 
@@ -264,4 +290,45 @@ function restart(){
     healthText.innerText = health;
     xptext.innerText = xp;
     goTown();
+}
+function easterEgg(){
+    update(locations[7]);
+}
+
+function pickTwo()
+{
+    pick(2);
+}
+
+function pickEight()
+{
+    pick(8);
+}
+
+function pick(guess){
+   let numbers = [];
+   while(numbers.length < 10)
+   {
+    numbers.push(Math.floor(Math.random() * 11));
+   }
+
+   text.innerText = "You picked " + guess + ". Here are the random numbers: \n";
+
+   for(let i = 0; i < 10; i++)
+   {
+     text.innerText += numbers[i] + "\n";
+   } 
+
+   if(numbers.indexOf(guess) !== -1){
+    text.innerText += "Right! You win 20 gold!"
+    gold += 20;
+    goldText.innerText = gold;
+   }else{
+    text.innerText += "Wrong! You lose 10health!"
+    health -= 10;
+    healthText.innerText = health
+    if(health <= 0){
+        lose();
+    }
+   }
 }
